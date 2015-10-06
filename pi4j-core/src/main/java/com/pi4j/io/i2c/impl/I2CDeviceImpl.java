@@ -30,7 +30,6 @@ package com.pi4j.io.i2c.impl;
  */
 
 import java.io.IOException;
-import java.util.concurrent.Callable;
 
 import com.pi4j.io.i2c.I2CDevice;
 
@@ -43,7 +42,7 @@ import com.pi4j.io.i2c.I2CDevice;
  */
 public class I2CDeviceImpl implements I2CDevice {
 
-	/**
+    /**
      * Reference to i2c bus
      */
     private I2CBusImpl bus;
@@ -53,14 +52,14 @@ public class I2CDeviceImpl implements I2CDevice {
      */
     private int deviceAddress;
     
-	/**
-	 * @return The address for which this instance is constructed for.
-	 */
+    /**
+     * @return The address for which this instance is constructed for.
+    */
     @Override
     public int getAddress() {
-    	
-    	return deviceAddress;
-    	
+        
+        return deviceAddress;
+        
     }
     
     /**
@@ -75,15 +74,6 @@ public class I2CDeviceImpl implements I2CDevice {
     }
 
     /**
-     * Used by WriteRunnables and ReadRunnables.
-     * 
-     * @return The bus associated with this I2CDeviceImpl instance.
-     */
-    I2CBusImpl getBus() {
-    	return bus;
-    }
-    
-    /**
      * This method writes one byte to i2c device. 
      * 
      * @param data byte to be written
@@ -92,26 +82,21 @@ public class I2CDeviceImpl implements I2CDevice {
      */
     @Override
     public void write(final byte data) throws IOException {
-    	
-    	final I2CDeviceImpl device = this;
-    	bus.runActionOnExclusivLockedBus(
-    			new Callable<Void>() {
-    				@Override
-    				public Void call() throws Exception {
-    					int ret = getBus().writeByteDirect(device, data);
-    					if (ret < 0) {
-    						throw new IOException(
-    								"Error writing to "
-    								+ device.makeDescription()
-    								+ ". Got '"
-    								+ ret
-    								+ "'.");
-    								
-    					}
-    					return null;
-    				}
-				});
-    	
+        
+        bus.runActionOnExclusivLockedBus(() -> {
+            int ret = bus.writeByteDirect(this, data);
+            if (ret < 0) {
+                throw new IOException(
+                        "Error writing to "
+                        + makeDescription()
+                        + ". Got '"
+                        + ret
+                        + "'.");
+                        
+            }
+            return null;
+        });
+        
     }
 
     /**
@@ -126,24 +111,19 @@ public class I2CDeviceImpl implements I2CDevice {
     @Override
     public void write(final byte[] data, final int offset, final int size) throws IOException {
 
-    	final I2CDeviceImpl device = this;
-    	bus.runActionOnExclusivLockedBus(
-    			new Callable<Void>() {
-    				@Override
-    				public Void call() throws Exception {
-    					int ret = getBus().writeBytesDirect(device, size, offset, data);
-    					if (ret < 0) {
-    						throw new IOException(
-    								"Error writing to "
-    								+ device.makeDescription()
-    								+ ". Got '"
-    								+ ret
-    								+ "'.");
-    								
-    					}
-    					return null;
-    				}
-				});
+        bus.runActionOnExclusivLockedBus(() -> {
+                int ret = bus.writeBytesDirect(this, size, offset, data);
+                if (ret < 0) {
+                    throw new IOException(
+                            "Error writing to "
+                            + makeDescription()
+                            + ". Got '"
+                            + ret
+                            + "'.");
+                            
+                }
+                return null;
+            });
         
     }
 
@@ -158,24 +138,19 @@ public class I2CDeviceImpl implements I2CDevice {
     @Override
     public void write(final int address, final byte data) throws IOException {
 
-    	final I2CDeviceImpl device = this;
-    	bus.runActionOnExclusivLockedBus(
-    			new Callable<Void>() {
-    				@Override
-    				public Void call() throws Exception {
-    					int ret = getBus().writeByte(device, address, data);
-    					if (ret < 0) {
-    						throw new IOException(
-    								"Error writing to "
-    								+ device.makeDescription(address)
-    								+ ". Got '"
-    								+ ret
-    								+ "'.");
-    								
-    					}
-    					return null;
-    				}
-				});
+        bus.runActionOnExclusivLockedBus(() -> {
+                int ret = bus.writeByte(this, address, data);
+                if (ret < 0) {
+                    throw new IOException(
+                            "Error writing to "
+                            + makeDescription(address)
+                            + ". Got '"
+                            + ret
+                            + "'.");
+                            
+                }
+                return null;
+            });
         
     }
 
@@ -192,24 +167,19 @@ public class I2CDeviceImpl implements I2CDevice {
     @Override
     public void write(final int address, final byte[] data, final int offset, final int size) throws IOException {
 
-    	final I2CDeviceImpl device = this;
-    	bus.runActionOnExclusivLockedBus(
-    			new Callable<Void>() {
-    				@Override
-    				public Void call() throws Exception {
-    					int ret = getBus().writeBytes(device, address, size, offset, data);
-    					if (ret < 0) {
-    						throw new IOException(
-    								"Error writing to "
-    								+ device.makeDescription(address)
-    								+ ". Got '"
-    								+ ret
-    								+ "'.");
-    								
-    					}
-    					return null;
-    				}
-				});
+        bus.runActionOnExclusivLockedBus(() -> {
+                int ret = bus.writeBytes(this, address, size, offset, data);
+                if (ret < 0) {
+                    throw new IOException(
+                            "Error writing to "
+                            + makeDescription(address)
+                            + ". Got '"
+                            + ret
+                            + "'.");
+                            
+                }
+                return null;
+            });
         
     }
 
@@ -224,24 +194,19 @@ public class I2CDeviceImpl implements I2CDevice {
     @Override
     public int read() throws IOException {
 
-    	final I2CDeviceImpl device = this;
-    	return bus.runActionOnExclusivLockedBus(
-    			new Callable<Integer>() {
-    				@Override
-    				public Integer call() throws Exception {
-    					int ret = getBus().readByteDirect(device);
-    					if (ret < 0) {
-    						throw new IOException(
-    								"Error reading from "
-    								+ device.makeDescription()
-    								+ ". Got '"
-    								+ ret
-    								+ "'.");
-    								
-    					}
-    					return ret;
-    				}
-				});
+        return bus.runActionOnExclusivLockedBus(() -> {
+                int ret = bus.readByteDirect(this);
+                if (ret < 0) {
+                    throw new IOException(
+                            "Error reading from "
+                            + makeDescription()
+                            + ". Got '"
+                            + ret
+                            + "'.");
+                            
+                }
+                return ret;
+            });
         
     }
 
@@ -263,24 +228,19 @@ public class I2CDeviceImpl implements I2CDevice {
     @Override
     public int read(final byte[] data, final int offset, final int size) throws IOException {
 
-    	final I2CDeviceImpl device = this;
-    	return bus.runActionOnExclusivLockedBus(
-    			new Callable<Integer>() {
-    				@Override
-    				public Integer call() throws Exception {
-    					int ret = getBus().readBytesDirect(device, size, offset, data);
-    					if (ret < 0) {
-    						throw new IOException(
-    								"Error reading from "
-    								+ device.makeDescription()
-    								+ ". Got '"
-    								+ ret
-    								+ "'.");
-    								
-    					}
-    					return ret;
-    				}
-				});
+        return bus.runActionOnExclusivLockedBus(() -> {
+                int ret = bus.readBytesDirect(this, size, offset, data);
+                if (ret < 0) {
+                    throw new IOException(
+                            "Error reading from "
+                            + makeDescription()
+                            + ". Got '"
+                            + ret
+                            + "'.");
+                            
+                }
+                return ret;
+            });
         
     }
 
@@ -296,24 +256,19 @@ public class I2CDeviceImpl implements I2CDevice {
     @Override
     public int read(final int address) throws IOException {
 
-    	final I2CDeviceImpl device = this;
-    	return bus.runActionOnExclusivLockedBus(
-    			new Callable<Integer>() {
-    				@Override
-    				public Integer call() throws Exception {
-    					int ret = getBus().readByte(device, address);
-    					if (ret < 0) {
-    						throw new IOException(
-    								"Error reading from "
-    								+ device.makeDescription(address)
-    								+ ". Got '"
-    								+ ret
-    								+ "'.");
-    								
-    					}
-    					return ret;
-    				}
-				});
+        return bus.runActionOnExclusivLockedBus(() -> {
+                int ret = bus.readByte(this, address);
+                if (ret < 0) {
+                    throw new IOException(
+                            "Error reading from "
+                            + makeDescription(address)
+                            + ". Got '"
+                            + ret
+                            + "'.");
+                            
+                }
+                return ret;
+            });
         
     }
 
@@ -336,24 +291,19 @@ public class I2CDeviceImpl implements I2CDevice {
     @Override
     public int read(final int address, final byte[] data, final int offset, final int size) throws IOException {
 
-    	final I2CDeviceImpl device = this;
-    	return bus.runActionOnExclusivLockedBus(
-    			new Callable<Integer>() {
-    				@Override
-    				public Integer call() throws Exception {
-    					int ret = getBus().readBytes(device, address, size, offset, data);
-    					if (ret < 0) {
-    						throw new IOException(
-    								"Error reading from "
-    								+ device.makeDescription(address)
-    								+ ". Got '"
-    								+ ret
-    								+ "'.");
-    								
-    					}
-    					return ret;
-    				}
-				});
+        return bus.runActionOnExclusivLockedBus(() -> {
+                int ret = bus.readBytes(this, address, size, offset, data);
+                if (ret < 0) {
+                    throw new IOException(
+                            "Error reading from "
+                            + makeDescription(address)
+                            + ". Got '"
+                            + ret
+                            + "'.");
+                            
+                }
+                return ret;
+            });
         
     }
 
@@ -373,29 +323,24 @@ public class I2CDeviceImpl implements I2CDevice {
      */
     @Override
     public int read(final byte[] writeData, final int writeOffset,
-    		final int writeSize, final byte[] readData, final int readOffset,
-    		final int readSize) throws IOException {
+            final int writeSize, final byte[] readData, final int readOffset,
+            final int readSize) throws IOException {
 
-    	final I2CDeviceImpl device = this;
-    	return bus.runActionOnExclusivLockedBus(
-    			new Callable<Integer>() {
-    				@Override
-    				public Integer call() throws Exception {
-    					int ret = getBus().writeAndReadBytesDirect(device, writeSize, writeOffset,
-    							writeData, readSize, readOffset, readData);
-    					if (ret < 0) {
-    						throw new IOException(
-    								"Error reading from "
-    								+ device.makeDescription()
-    								+ ". Got '"
-    								+ ret
-    								+ "'.");
-    								
-    					}
-    					return ret;
-    				}
-				});
-    	
+        return bus.runActionOnExclusivLockedBus(() -> {
+                int ret = bus.writeAndReadBytesDirect(this, writeSize, writeOffset,
+                        writeData, readSize, readOffset, readData);
+                if (ret < 0) {
+                    throw new IOException(
+                            "Error reading from "
+                            + makeDescription()
+                            + ". Got '"
+                            + ret
+                            + "'.");
+                            
+                }
+                return ret;
+            });
+        
     }
 
     /**
@@ -405,7 +350,7 @@ public class I2CDeviceImpl implements I2CDevice {
      */
     protected String makeDescription() {
         return "I2CDevice on "
-        		+ bus + " at address 0x" + Integer.toHexString(deviceAddress);
+                + bus + " at address 0x" + Integer.toHexString(deviceAddress);
     }
     
     /**
@@ -417,7 +362,7 @@ public class I2CDeviceImpl implements I2CDevice {
      */
     protected String makeDescription(int address) {
         return "I2CDevice on "
-        		+ bus + " at address 0x" + Integer.toHexString(deviceAddress) 
+                + bus + " at address 0x" + Integer.toHexString(deviceAddress) 
                 + " to address 0x" + Integer.toHexString(address);
     }
     
